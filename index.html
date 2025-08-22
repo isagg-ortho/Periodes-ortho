@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de répartition proportionnelle - Orthopédagogie</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ortho-config {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: none;
+        }
+        
+        .ortho-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .ortho-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .total-disponible {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #2e7d32;
+            margin-top: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .cycle-section {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+        }
+        
+        .classe-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .classe-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 80px;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 0.9em;
+        }
+        
+        .form-group input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: center;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .periodes-result {
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #667eea;
+            background: #f8f9ff;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        
+        .results {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        .results .section-title {
+            color: white;
+        }
+        
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .result-card {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .result-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .cycle-summary {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .add-btn-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .classe-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .ortho-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Calculateur de répartition proportionnelle</h1>
+            <p class="subtitle">Orthopédagogie - Répartition automatique par classe selon le nombre d'élèves</p>
+        </div>
+
+        <!-- Configuration des orthopédagogues -->
+        <div class="section ortho-config">
+            <div class="section-title">
+                👥 Vos ressources en orthopédagogie
+            </div>
+            <div class="ortho-grid">
+                <div class="ortho-item">
+                    <div class="form-group">
+                        <label>Orthopédagogue 1</label>
+                        <input type="number" id="ortho1" value="100" min="0" max="100" onchange="calculer()">
+                        <small>% du poste</small>
+                    </div>
+                </div>
+                <div class="ortho-item">
+                    <div class="form-group">
+                        <label>Orthopédagogue 2</label>
+                        <input type="number" id="ortho2" value="40" min="0" max="100" onchange="calculer()">
+                        <small>% du poste</small>
+                    </div>
+                </div>
+                <div class="ortho-item">
+                    <div class="form-group">
+                        <label>Orthopédagogue 3</label>
+                        <input type="number" id="ortho3" value="15" min="0" max="100" onchange="calculer()">
+                        <small>% du poste</small>
+                    </div>
+                </div>
+            </div>
+            <div class="total-disponible" id="total-disponible">
+                Total disponible: 57,35 périodes d'enseignement par cycle
+            </div>
+        </div>
+
+        <!-- 1er cycle -->
+        <div class="section cycle-section">
+            <div class="section-title">
+                🎓 1er cycle
+                <button class="btn btn-success" onclick="ajouterClasse(1)">+ Ajouter classe</button>
+            </div>
+            <div id="cycle1-classes">
+                <!-- Classes du 1er cycle -->
+            </div>
+        </div>
+
+        <!-- 2e cycle -->
+        <div class="section cycle-section">
+            <div class="section-title">
+                📚 2e cycle
+                <button class="btn btn-success" onclick="ajouterClasse(2)">+ Ajouter classe</button>
+            </div>
+            <div id="cycle2-classes">
+                <!-- Classes du 2e cycle -->
+            </div>
+        </div>
+
+        <!-- 3e cycle -->
+        <div class="section cycle-section">
+            <div class="section-title">
+                🎯 3e cycle
+                <button class="btn btn-success" onclick="ajouterClasse(3)">+ Ajouter classe</button>
+            </div>
+            <div id="cycle3-classes">
+                <!-- Classes du 3e cycle -->
+            </div>
+        </div>
+
+        <!-- Résultats -->
+        <div class="section results">
+            <div class="section-title">📈 Répartition des périodes</div>
+            
+            <div class="results-summary">
+                <div class="result-card">
+                    <div class="result-value" id="total-eleves">0</div>
+                    <div class="result-label">Total élèves</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value" id="total-classes">0</div>
+                    <div class="result-label">Total classes</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value" id="total-periodes-utilisees">0</div>
+                    <div class="result-label">Périodes utilisées</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value" id="periodes-restantes">0</div>
+                    <div class="result-label">Périodes restantes</div>
+                </div>
+            </div>
+
+            <div id="resultats-par-cycle">
+                <!-- Résultats détaillés par cycle -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let classeId = 0;
+
+        function ajouterClasse(cycle) {
+            classeId++;
+            const container = document.getElementById(`cycle${cycle}-classes`);
+            const classeHtml = `
+                <div class="classe-item" id="classe-${classeId}" data-cycle="${cycle}">
+                    <div class="classe-grid">
+                        <div class="form-group">
+                            <label>Nom de la classe</label>
+                            <input type="text" placeholder="Ex: ${cycle}A" onchange="calculer()">
+                        </div>
+                        <div class="form-group">
+                            <label>Élèves en difficulté</label>
+                            <input type="number" min="0" placeholder="0" onchange="calculer()">
+                        </div>
+                        <div class="form-group">
+                            <label>% du total</label>
+                            <div class="periodes-result" id="pct-${classeId}">0%</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Périodes allouées</label>
+                            <div class="periodes-result" id="periodes-${classeId}">0</div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-danger" onclick="supprimerClasse(${classeId})">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', classeHtml);
+            calculer();
+        }
+
+        function supprimerClasse(id) {
+            const element = document.getElementById(`classe-${id}`);
+            if (element) {
+                element.remove();
+                calculer();
+            }
+        }
+
+        function calculer() {
+            // Calcul des périodes disponibles
+            const ortho1 = parseInt(document.getElementById('ortho1').value) || 0;
+            const ortho2 = parseInt(document.getElementById('ortho2').value) || 0;
+            const ortho3 = parseInt(document.getElementById('ortho3').value) || 0;
+            
+            const totalDisponible = (ortho1 + ortho2 + ortho3) * 37 / 100;
+            
+            document.getElementById('total-disponible').textContent = 
+                `Total disponible: ${totalDisponible.toFixed(2)} périodes d'enseignement par cycle`;
+
+            // Calcul total des élèves
+            let totalEleves = 0;
+            let totalClasses = 0;
+            let elevesByCycle = {1: 0, 2: 0, 3: 0};
+            let classesByCycle = {1: 0, 2: 0, 3: 0};
+
+            const classes = document.querySelectorAll('.classe-item');
+            classes.forEach(classe => {
+                const inputs = classe.querySelectorAll('input');
+                const cycle = parseInt(classe.dataset.cycle);
+                const nbEleves = parseInt(inputs[1].value) || 0;
+                
+                if (inputs[0].value.trim()) { // Si la classe a un nom
+                    totalEleves += nbEleves;
+                    totalClasses++;
+                    elevesByCycle[cycle] += nbEleves;
+                    classesByCycle[cycle]++;
+                }
+            });
+
+            // Calcul des périodes par classe
+            let totalPeriodesUtilisees = 0;
+            let resultatsParCycle = {1: [], 2: [], 3: []};
+
+            classes.forEach(classe => {
+                const inputs = classe.querySelectorAll('input');
+                const cycle = parseInt(classe.dataset.cycle);
+                const nbEleves = parseInt(inputs[1].value) || 0;
+                const classeId = classe.id.split('-')[1];
+                
+                if (inputs[0].value.trim() && totalEleves > 0) {
+                    const pourcentage = (nbEleves / totalEleves * 100);
+                    const periodesAllouees = (nbEleves / totalEleves) * totalDisponible;
+                    
+                    document.getElementById(`pct-${classeId}`).textContent = pourcentage.toFixed(1) + '%';
+                    document.getElementById(`periodes-${classeId}`).textContent = periodesAllouees.toFixed(1);
+                    
+                    totalPeriodesUtilisees += periodesAllouees;
+                    
+                    resultatsParCycle[cycle].push({
+                        nom: inputs[0].value,
+                        eleves: nbEleves,
+                        periodes: periodesAllouees
+                    });
+                } else {
+                    document.getElementById(`pct-${classeId}`).textContent = '0%';
+                    document.getElementById(`periodes-${classeId}`).textContent = '0';
+                }
+            });
+
+            // Mise à jour des résultats
+            document.getElementById('total-eleves').textContent = totalEleves;
+            document.getElementById('total-classes').textContent = totalClasses;
+            document.getElementById('total-periodes-utilisees').textContent = totalPeriodesUtilisees.toFixed(1);
+            document.getElementById('periodes-restantes').textContent = (totalDisponible - totalPeriodesUtilisees).toFixed(1);
+
+            // Affichage des résultats par cycle
+            let resultatsHtml = '';
+            for (let cycle = 1; cycle <= 3; cycle++) {
+                if (resultatsParCycle[cycle].length > 0) {
+                    const totalElevesCycle = resultatsParCycle[cycle].reduce((sum, classe) => sum + classe.eleves, 0);
+                    const totalPeriodesCycle = resultatsParCycle[cycle].reduce((sum, classe) => sum + classe.periodes, 0);
+                    
+                    resultatsHtml += `
+                        <div class="cycle-summary">
+                            <h4>${cycle}${cycle === 1 ? 'er' : 'e'} cycle - ${totalElevesCycle} élèves - ${totalPeriodesCycle.toFixed(1)} périodes</h4>
+                            ${resultatsParCycle[cycle].map(classe => 
+                                `<div>• ${classe.nom}: ${classe.eleves} élèves → ${classe.periodes.toFixed(1)} périodes</div>`
+                            ).join('')}
+                        </div>
+                    `;
+                }
+            }
+            document.getElementById('resultats-par-cycle').innerHTML = resultatsHtml;
+        }
+
+        // Ajouter des classes par défaut
+        window.onload = function() {
+            // 1er cycle
+            ajouterClasse(1);
+            ajouterClasse(1);
+            ajouterClasse(1);
+            
+            // 2e cycle
+            ajouterClasse(2);
+            ajouterClasse(2);
+            ajouterClasse(2);
+            
+            // 3e cycle
+            ajouterClasse(3);
+            ajouterClasse(3);
+            
+            // Remplir avec vos données actuelles (optionnel)
+            const classes = document.querySelectorAll('.classe-item');
+            if (classes.length >= 8) {
+                // 1er cycle
+                classes[0].querySelectorAll('input')[0].value = '1A';
+                classes[0].querySelectorAll('input')[1].value = '10';
+                classes[1].querySelectorAll('input')[0].value = '1B';
+                classes[1].querySelectorAll('input')[1].value = '5';
+                classes[2].querySelectorAll('input')[0].value = '1C';
+                classes[2].querySelectorAll('input')[1].value = '9';
+                
+                // 2e cycle
+                classes[3].querySelectorAll('input')[0].value = '2A';
+                classes[3].querySelectorAll('input')[1].value = '10';
+                classes[4].querySelectorAll('input')[0].value = '2B';
+                classes[4].querySelectorAll('input')[1].value = '8';
+                classes[5].querySelectorAll('input')[0].value = '2C';
+                classes[5].querySelectorAll('input')[1].value = '6';
+                
+                // 3e cycle
+                classes[6].querySelectorAll('input')[0].value = '3A';
+                classes[6].querySelectorAll('input')[1].value = '10';
+                classes[7].querySelectorAll('input')[0].value = '3B';
+                classes[7].querySelectorAll('input')[1].value = '8';
+            }
+            
+            calculer();
+        };
+    </script>
+</body>
+</html>
